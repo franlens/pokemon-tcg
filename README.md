@@ -14,6 +14,25 @@ Ejemplo: `data/snapshot/pitch-black-2026-08-17.csv`.
 
 La carpeta `data/history/` queda reservada para históricos consolidados.
 
+## Análisis de ETB
+
+`analyze_etb_history.py` elige la expansión más reciente que tenga al menos seis
+meses y un Elite Trainer Box, selecciona sus 14 cartas con mayor precio y
+descarga el histórico diario completo de Cardmarket y TCG Player. El resultado
+se guarda como `data/history/<expansion>-YYYY-MM-DD-YYYY-MM-DD.csv`.
+
+```powershell
+python analyze_etb_history.py
+python analyze_etb_history.py --publish
+```
+
+`--publish` confirma el CSV en Git y lo sube a GitHub; es la opción que usará
+el futuro cron.
+
+El plan Basic de la API devuelve 30 días por página y limita las peticiones por
+minuto. El script se autorregula para respetarlo; una ventana de seis meses para
+14 cartas tarda aproximadamente diez minutos.
+
 Cada ejecución identifica la expansión publicada más recientemente. Si su CSV ya existe, no descarga de nuevo las cartas. Las extracciones usan la API de Pokémon TCG, con datos de Cardmarket en EUR.
 
 ## Automatización
