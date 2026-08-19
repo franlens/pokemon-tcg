@@ -21,6 +21,10 @@ meses y un Elite Trainer Box, selecciona sus 7 cartas con mayor precio y
 descarga el histórico diario completo de Cardmarket y TCG Player. El resultado
 se guarda como `data/history/<expansion>-YYYY-MM-DD-YYYY-MM-DD.csv`.
 
+Antes de descargar el histórico, consulta GitHub. Si `data/history/` ya contiene
+un CSV para la expansión elegida, termina sin hacer más peticiones a la API de
+precios.
+
 ```powershell
 python analyze_etb_history.py
 python analyze_etb_history.py --publish

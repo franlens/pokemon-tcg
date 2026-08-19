@@ -30,6 +30,7 @@ API_BASE = "https://pokemon-tcg-api.p.rapidapi.com"
 RETRYABLE_HTTP_CODES = {408, 425, 429, 500, 502, 503, 504}
 MIN_REQUEST_INTERVAL_SECONDS = 7
 TOP_CARD_COUNT = 7
+GITHUB_REPOSITORY = "franlens/pokemon-tcg"
 _last_request_at = 0.0
 
 
@@ -160,6 +161,39 @@ def safe_slug(value: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", value.lower()).strip("-") or "expansion"
 
 
+def history_filename(expansion: dict, start: date, end: date) -> str:
+    slug = safe_slug(str(expansion.get("slug") or expansion["name"]))
+    return f"{slug}-{start:%Y-%m-%d}-{end:%Y-%m-%d}.csv"
+
+
+def github_history_exists(expansion: dict) -> str | None:
+    """Return an existing remote CSV for this expansion, if GitHub has one.
+
+    This is deliberately a remote check rather than a local filesystem check:
+    a fresh cron environment must not repeat an expensive API export already
+    committed by an earlier run.
+    """
+    url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/contents/data/history?ref=master"
+    request = Request(url, headers={"Accept": "application/vnd.github+json", "User-Agent": "pokemon-tcg-history-job"})
+    try:
+        with urlopen(request, timeout=30) as response:
+            entries = json.load(response)
+    except HTTPError as exc:
+        if exc.code == 404:
+            return None
+        detail = exc.read().decode("utf-8", errors="replace")
+        raise RuntimeError(f"Could not check GitHub history (HTTP {exc.code}): {detail[:300]}") from exc
+    except (URLError, TimeoutError, socket.timeout, json.JSONDecodeError) as exc:
+        raise RuntimeError(f"Could not check GitHub history: {exc}") from exc
+    if not isinstance(entries, list):
+        raise RuntimeError("Unexpected GitHub history directory response.")
+    prefix = f"{safe_slug(str(expansion.get('slug') or expansion['name']))}-"
+    for entry in entries:
+        if entry.get("type") == "file" and str(entry.get("name", "")).startswith(prefix) and str(entry.get("name", "")).endswith(".csv"):
+            return str(entry["name"])
+    return None
+
+
 def write_csv(expansion: dict, cards: list[dict], start: date, end: date) -> Path:
     rows: list[dict[str, object]] = []
     for rank, card in enumerate(cards, start=1):
@@ -177,7 +211,7 @@ def write_csv(expansion: dict, cards: list[dict], start: date, end: date) -> Pat
             rows.append(row)
     rows.sort(key=lambda row: (int(row["price_rank"]), str(row["observed_on"])))
     HISTORY_DIR.mkdir(parents=True, exist_ok=True)
-    destination = HISTORY_DIR / f"{safe_slug(str(expansion.get('slug') or expansion['name']))}-{start:%Y-%m-%d}-{end:%Y-%m-%d}.csv"
+    destination = HISTORY_DIR / history_filename(expansion, start, end)
     fieldnames = [
         "expansion_id", "expansion_name", "expansion_released_at", "analysis_start", "analysis_end",
         "price_rank", "observed_on", "card_id", "cardmarket_id", "tcgid", "card_name", "card_number", "rarity",
@@ -208,6 +242,10 @@ def main() -> int:
     load_dotenv()
     start = calendar_months_before(args.date_to, args.months)
     expansion = newest_eligible_expansion(start)
+    existing_history = github_history_exists(expansion)
+    if existing_history:
+        print(f"Skipped: GitHub already contains data/history/{existing_history} for {expansion['name']}.")
+        return 0
     cards = top_cards(int(expansion["id"]))
     output = write_csv(expansion, cards, start, args.date_to)
     if args.publish:
