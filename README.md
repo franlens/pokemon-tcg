@@ -17,7 +17,7 @@ La carpeta `data/history/` queda reservada para históricos consolidados.
 ## Análisis de ETB
 
 `analyze_etb_history.py` elige la expansión más reciente que tenga al menos seis
-meses y un Elite Trainer Box, selecciona sus 14 cartas con mayor precio y
+meses y un Elite Trainer Box, selecciona sus 7 cartas con mayor precio y
 descarga el histórico diario completo de Cardmarket y TCG Player. El resultado
 se guarda como `data/history/<expansion>-YYYY-MM-DD-YYYY-MM-DD.csv`.
 
@@ -31,7 +31,7 @@ el futuro cron.
 
 El plan Basic de la API devuelve 30 días por página y limita las peticiones por
 minuto. El script se autorregula para respetarlo; una ventana de seis meses para
-14 cartas tarda aproximadamente diez minutos.
+7 cartas se mantiene dentro del límite de 100 peticiones diarias.
 
 Cada ejecución identifica la expansión publicada más recientemente. Si su CSV ya existe, no descarga de nuevo las cartas. Las extracciones usan la API de Pokémon TCG, con datos de Cardmarket en EUR.
 

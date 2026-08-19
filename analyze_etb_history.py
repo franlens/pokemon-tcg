@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Export six months of daily prices for the 14 leading cards of an eligible ETB.
+"""Export six months of daily prices for the 7 leading cards of an eligible ETB.
 
 The selected expansion is the newest one represented by a standard Elite Trainer
 Box whose release date is at least ``--months`` calendar months old.  One row is
@@ -29,6 +29,7 @@ HISTORY_DIR = ROOT / "data" / "history"
 API_BASE = "https://pokemon-tcg-api.p.rapidapi.com"
 RETRYABLE_HTTP_CODES = {408, 425, 429, 500, 502, 503, 504}
 MIN_REQUEST_INTERVAL_SECONDS = 7
+TOP_CARD_COUNT = 7
 _last_request_at = 0.0
 
 
@@ -117,12 +118,12 @@ def newest_eligible_expansion(cutoff: date) -> dict:
 def top_cards(episode_id: int) -> list[dict]:
     response = api_get(
         f"/episodes/{episode_id}/cards",
-        {"sort": "price_highest", "per_page": 14, "page": 1},
+        {"sort": "price_highest", "per_page": TOP_CARD_COUNT, "page": 1},
     )
     cards = response.get("data", [])
-    if len(cards) < 14:
-        raise RuntimeError(f"Expansion {episode_id} only returned {len(cards)} cards; 14 are required.")
-    return cards[:14]
+    if len(cards) < TOP_CARD_COUNT:
+        raise RuntimeError(f"Expansion {episode_id} only returned {len(cards)} cards; {TOP_CARD_COUNT} are required.")
+    return cards[:TOP_CARD_COUNT]
 
 
 def card_history(card: dict, start: date, end: date) -> list[dict[str, object]]:
