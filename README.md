@@ -37,10 +37,12 @@ El plan Basic de la API devuelve 30 días por página y limita las peticiones po
 minuto. El script se autorregula para respetarlo; una ventana de seis meses para
 7 cartas se mantiene dentro del límite de 100 peticiones diarias.
 
-Cada ejecución identifica la expansión publicada más recientemente. Si su CSV ya existe, no descarga de nuevo las cartas. Las extracciones usan la API de Pokémon TCG, con datos de Cardmarket en EUR.
-
 ## Automatización
 
-`fetch_latest_expansion.py` identifica la expansión más reciente con una petición y descarga después todas sus cartas, en páginas de hasta 100. Genera una captura nueva en cada ejecución; si ya existe un CSV con la misma fecha, añade `-HHMMSS` al nombre.
+`fetch_latest_expansion.py` identifica la expansión del Elite Trainer Box más
+reciente. Solo descarga sus cartas si han pasado al menos 20 días desde su fecha
+de lanzamiento oficial. Antes de pedir ese detalle, consulta GitHub: si ya hay
+un CSV de la expansión en `data/snapshot/`, termina sin hacer más peticiones a
+la API de precios.
 
 Para configurar la clave localmente, copia `.env.example` a `.env` y rellena `RAPIDAPI_KEY`. La clave no se sube al repositorio. Cada CSV incluye el precio general `lowest_near_mint` y el de España `lowest_near_mint_ES`, ambos en EUR.

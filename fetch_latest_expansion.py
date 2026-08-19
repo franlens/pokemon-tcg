@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Archive Cardmarket EUR prices for cards in the newest Pokemon TCG expansion.
+"""Archive Cardmarket EUR prices for a mature newest Pokémon TCG ETB expansion.
 
-Consumes one API request to identify the newest expansion, then one request per
-100 cards in that expansion. A fresh CSV is intentionally created on every run.
+It stops unless the newest ETB expansion has been officially released for at
+least 20 days. It also stops before downloading cards when GitHub already has a
+snapshot for that expansion.
 """
 
 from __future__ import annotations
@@ -15,7 +16,7 @@ import socket
 import subprocess
 import sys
 import time
-from datetime import datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
@@ -27,6 +28,8 @@ API_BASE = "https://pokemon-tcg-api.p.rapidapi.com"
 DEFAULT_REQUEST_TIMEOUT_SECONDS = 60
 DEFAULT_MAX_ATTEMPTS = 3
 RETRYABLE_HTTP_CODES = {408, 425, 429, 500, 502, 503, 504}
+MINIMUM_ETB_AGE_DAYS = 20
+GITHUB_REPOSITORY = "franlens/pokemon-tcg"
 
 
 def load_dotenv() -> None:
@@ -114,14 +117,21 @@ def api_get(path: str, params: dict[str, object]) -> dict:
     raise AssertionError("Retry loop should have returned or raised.")
 
 
-def newest_expansion() -> dict:
-    # The API exposes `episode_newest` for cards. One card is enough to identify
-    # the newest expansion and avoids paginating every historical expansion.
-    response = api_get("/cards", {"sort": "episode_newest", "per_page": 1, "page": 1})
-    cards = response.get("data", [])
-    if not cards or not cards[0].get("episode"):
-        raise RuntimeError("La API no devolvió una expansión reciente.")
-    return cards[0]["episode"]
+def newest_etb_expansion() -> dict:
+    """Return the newest expansion represented by an Elite Trainer Box."""
+    response = api_get("/products", {"search": "Elite Trainer Box", "sort": "episode_newest", "page": 1})
+    expansions: dict[int, dict] = {}
+    for product in response.get("data", []):
+        if "elite trainer box" not in str(product.get("name", "")).lower():
+            continue
+        episode = product.get("episode") or {}
+        try:
+            expansions[int(episode["id"])] = episode
+        except (KeyError, TypeError, ValueError):
+            continue
+    if not expansions:
+        raise RuntimeError("The API returned no recent Elite Trainer Box expansion.")
+    return max(expansions.values(), key=lambda episode: str(episode.get("released_at", "")))
 
 
 def expansion_cards(episode_id: int) -> list[dict]:
@@ -144,6 +154,30 @@ def numeric(value: object) -> float | None:
 def safe_slug(value: str) -> str:
     slug = re.sub(r"[^a-z0-9]+", "-", value.lower()).strip("-")
     return slug or "expansion"
+
+
+def github_snapshot_exists(expansion: dict) -> str | None:
+    """Return an existing GitHub snapshot for the expansion, if any."""
+    url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/contents/data/snapshot?ref=master"
+    request = Request(url, headers={"Accept": "application/vnd.github+json", "User-Agent": "pokemon-tcg-snapshot-job"})
+    try:
+        with urlopen(request, timeout=30) as response:
+            entries = json.load(response)
+    except HTTPError as exc:
+        if exc.code == 404:
+            return None
+        detail = exc.read().decode("utf-8", errors="replace")
+        raise RuntimeError(f"Could not check GitHub snapshots (HTTP {exc.code}): {detail[:300]}") from exc
+    except (URLError, TimeoutError, socket.timeout, json.JSONDecodeError) as exc:
+        raise RuntimeError(f"Could not check GitHub snapshots: {exc}") from exc
+    if not isinstance(entries, list):
+        raise RuntimeError("Unexpected GitHub snapshot directory response.")
+    prefix = f"{safe_slug(str(expansion.get('slug') or expansion['name']))}-"
+    for entry in entries:
+        name = str(entry.get("name", ""))
+        if entry.get("type") == "file" and name.startswith(prefix) and name.endswith(".csv"):
+            return name
+    return None
 
 
 def output_path(expansion: dict, captured_at: datetime) -> Path:
@@ -197,13 +231,27 @@ def git_publish(file_path: Path) -> None:
 def main() -> int:
     load_dotenv()
     field = os.environ.get("CARDMARKET_PRICE_FIELD", "lowest_near_mint")
-    expansion = newest_expansion()
-    cards = expansion_cards(int(expansion["id"]))
-    if not cards:
-        raise RuntimeError("La expansión no contiene cartas descargables.")
     # The host is configured for Europe/Madrid. Using the host timezone avoids
     # requiring the separate tzdata package on Windows.
     captured_at = datetime.now().astimezone().replace(microsecond=0)
+    expansion = newest_etb_expansion()
+    try:
+        released_at = date.fromisoformat(str(expansion["released_at"]))
+    except (KeyError, TypeError, ValueError) as exc:
+        raise RuntimeError("The newest ETB expansion has no valid official release date.") from exc
+    available_from = released_at + timedelta(days=MINIMUM_ETB_AGE_DAYS)
+    if captured_at.date() < available_from:
+        print(
+            f"Skipped: {expansion.get('name')} was released on {released_at} and is not eligible until {available_from}."
+        )
+        return 0
+    existing_snapshot = github_snapshot_exists(expansion)
+    if existing_snapshot:
+        print(f"Skipped: GitHub already contains data/snapshot/{existing_snapshot} for {expansion.get('name')}.")
+        return 0
+    cards = expansion_cards(int(expansion["id"]))
+    if not cards:
+        raise RuntimeError("The expansion contains no downloadable cards.")
     file_path = write_csv(cards, expansion, captured_at, field)
     git_publish(file_path)
     print(f"Publicado {file_path.name}: {len(cards)} cartas de {expansion.get('name')}.")
