@@ -9,6 +9,7 @@ number of actual RapidAPI HTTP requests, including retries.
 from __future__ import annotations
 
 import csv
+import argparse
 import json
 import os
 import re
@@ -44,7 +45,7 @@ def load_dotenv() -> None:
             os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
 
 
-def api_get(path: str, params: dict[str, object]) -> dict:
+def api_get(path: str, params: dict[str, object], max_requests: int) -> dict:
     """Fetch an API response and count every outgoing HTTP request."""
     global _last_request_at, request_count
     key = os.environ.get("RAPIDAPI_KEY")
@@ -58,6 +59,8 @@ def api_get(path: str, params: dict[str, object]) -> dict:
         wait = REQUEST_INTERVAL_SECONDS - (time.monotonic() - _last_request_at)
         if wait > 0:
             time.sleep(wait)
+        if request_count >= max_requests:
+            raise RuntimeError(f"Safety limit of {max_requests} RapidAPI requests reached.")
         request_count += 1
         try:
             with urlopen(request, timeout=60) as response:
@@ -75,12 +78,12 @@ def api_get(path: str, params: dict[str, object]) -> dict:
     raise AssertionError("Unreachable")
 
 
-def newest_expansions() -> list[dict]:
-    """Get the five latest released unique expansions that have an ETB."""
+def newest_expansions(count: int, before: date | None, max_requests: int) -> list[dict]:
+    """Get the newest released unique ETB expansions, optionally before a date."""
     expansions: dict[int, dict] = {}
     page = 1
-    while len(expansions) < EXPANSION_COUNT:
-        response = api_get("/products", {"search": "Elite Trainer Box", "sort": "episode_newest", "page": page})
+    while len(expansions) < count:
+        response = api_get("/products", {"search": "Elite Trainer Box", "sort": "episode_newest", "page": page}, max_requests)
         batch = response.get("data", [])
         for product in batch:
             if "elite trainer box" not in str(product.get("name", "")).lower():
@@ -91,25 +94,25 @@ def newest_expansions() -> list[dict]:
                 released_at = date.fromisoformat(str(episode["released_at"]))
             except (KeyError, TypeError, ValueError):
                 continue
-            if released_at <= date.today():
+            if released_at <= date.today() and (before is None or released_at < before):
                 expansions[episode_id] = episode
         paging = response.get("paging", {})
-        if len(expansions) >= EXPANSION_COUNT:
+        if len(expansions) >= count:
             break
         if not batch or page >= int(paging.get("total", page)):
             break
         page += 1
-    selected = sorted(expansions.values(), key=lambda item: str(item["released_at"]), reverse=True)[:EXPANSION_COUNT]
-    if len(selected) != EXPANSION_COUNT:
-        raise RuntimeError(f"Only found {len(selected)} released ETB expansions; expected {EXPANSION_COUNT}.")
+    selected = sorted(expansions.values(), key=lambda item: str(item["released_at"]), reverse=True)[:count]
+    if len(selected) != count:
+        raise RuntimeError(f"Only found {len(selected)} eligible ETB expansions; expected {count}.")
     return selected
 
 
-def expansion_cards(episode_id: int) -> list[dict]:
+def expansion_cards(episode_id: int, max_requests: int) -> list[dict]:
     cards: list[dict] = []
     page = 1
     while True:
-        response = api_get(f"/episodes/{episode_id}/cards", {"per_page": CARDS_PER_PAGE, "page": page})
+        response = api_get(f"/episodes/{episode_id}/cards", {"per_page": CARDS_PER_PAGE, "page": page}, max_requests)
         batch = response.get("data", [])
         cards.extend(batch)
         paging = response.get("paging", {})
@@ -150,11 +153,18 @@ def write_csv(expansion: dict, cards: list[dict], captured_at: datetime) -> Path
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--count", type=int, default=EXPANSION_COUNT, help="Number of expansions to export.")
+    parser.add_argument("--before", type=date.fromisoformat, help="Only expansions released before YYYY-MM-DD.")
+    parser.add_argument("--max-requests", type=int, default=85, help="Hard cap for this run, including retries.")
+    args = parser.parse_args()
+    if args.count < 1 or args.max_requests < 1:
+        raise RuntimeError("--count and --max-requests must be positive.")
     load_dotenv()
     captured_at = datetime.now().astimezone().replace(microsecond=0)
     RESOURCES_DIR.mkdir(exist_ok=True)
-    for expansion in newest_expansions():
-        cards = expansion_cards(int(expansion["id"]))
+    for expansion in newest_expansions(args.count, args.before, args.max_requests):
+        cards = expansion_cards(int(expansion["id"]), args.max_requests)
         if not cards:
             raise RuntimeError(f"Expansion {expansion.get('name')} has no downloadable cards.")
         path = write_csv(expansion, cards, captured_at)
