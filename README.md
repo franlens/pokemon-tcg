@@ -4,13 +4,13 @@ Histórico público de precios en euros de las cartas de la expansión más reci
 
 ## Datos
 
-Las capturas de la primera mensualidad se guardan en `data/1month/` con este formato:
+Las capturas de la primera mensualidad se guardan en `data/snapshot/1month/` con este formato:
 
 ```text
 <expansion>-YYYY-MM-DD.csv
 ```
 
-Ejemplo: `data/1month/pitch-black-2026-08-17.csv`.
+Ejemplo: `data/snapshot/1month/pitch-black-2026-08-17.csv`.
 
 La carpeta `data/history/` queda reservada para históricos consolidados.
 
@@ -42,7 +42,7 @@ minuto. El script se autorregula para respetarlo; una ventana de seis meses para
 `fetch_latest_expansion.py` identifica la expansión del Elite Trainer Box más
 reciente. Solo descarga sus cartas si han pasado al menos 28 días desde su fecha
 de lanzamiento oficial. Antes de pedir ese detalle, consulta GitHub: si ya hay
-un CSV de la expansión en `data/1month/`, termina sin hacer más peticiones a la
+un CSV de la expansión en `data/snapshot/1month/`, termina sin hacer más peticiones a la
 API de precios.
 
 Para configurar la clave localmente, copia `.env.example` a `.env` y rellena

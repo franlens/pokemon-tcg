@@ -23,7 +23,7 @@ from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 ROOT = Path(__file__).resolve().parent
-DATA_DIR = ROOT / "data" / "1month"
+DATA_DIR = ROOT / "data" / "snapshot" / "1month"
 API_BASE = "https://pokemon-tcg-api.p.rapidapi.com"
 DEFAULT_REQUEST_TIMEOUT_SECONDS = 60
 DEFAULT_MAX_ATTEMPTS = 3
@@ -158,7 +158,7 @@ def safe_slug(value: str) -> str:
 
 def github_archive_exists(expansion: dict) -> str | None:
     """Return an existing GitHub one-month archive for the expansion, if any."""
-    url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/contents/data/1month?ref=master"
+    url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/contents/data/snapshot/1month?ref=master"
     request = Request(url, headers={"Accept": "application/vnd.github+json", "User-Agent": "pokemon-tcg-snapshot-job"})
     try:
         with urlopen(request, timeout=30) as response:
@@ -247,7 +247,7 @@ def main() -> int:
         return 0
     existing_archive = github_archive_exists(expansion)
     if existing_archive:
-        print(f"Skipped: GitHub already contains data/1month/{existing_archive} for {expansion.get('name')}.")
+        print(f"Skipped: GitHub already contains data/snapshot/1month/{existing_archive} for {expansion.get('name')}.")
         return 0
     cards = expansion_cards(int(expansion["id"]))
     if not cards:
