@@ -25,7 +25,7 @@ from urllib.request import Request, urlopen
 
 
 ROOT = Path(__file__).resolve().parent
-HISTORY_DIR = ROOT / "data" / "history"
+HISTORY_DIR = ROOT / "data" / "history" / "6month"
 API_BASE = "https://pokemon-tcg-api.p.rapidapi.com"
 RETRYABLE_HTTP_CODES = {408, 425, 429, 500, 502, 503, 504}
 MIN_REQUEST_INTERVAL_SECONDS = 7
@@ -173,7 +173,7 @@ def github_history_exists(expansion: dict) -> str | None:
     a fresh cron environment must not repeat an expensive API export already
     committed by an earlier run.
     """
-    url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/contents/data/history?ref=master"
+    url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/contents/data/history/6month?ref=master"
     request = Request(url, headers={"Accept": "application/vnd.github+json", "User-Agent": "pokemon-tcg-history-job"})
     try:
         with urlopen(request, timeout=30) as response:
@@ -244,7 +244,7 @@ def main() -> int:
     expansion = newest_eligible_expansion(start)
     existing_history = github_history_exists(expansion)
     if existing_history:
-        print(f"Skipped: GitHub already contains data/history/{existing_history} for {expansion['name']}.")
+        print(f"Skipped: GitHub already contains data/history/6month/{existing_history} for {expansion['name']}.")
         return 0
     cards = top_cards(int(expansion["id"]))
     output = write_csv(expansion, cards, start, args.date_to)

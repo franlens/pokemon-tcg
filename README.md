@@ -12,16 +12,16 @@ Las capturas de la primera mensualidad se guardan en `data/snapshot/1month/` con
 
 Ejemplo: `data/snapshot/1month/pitch-black-2026-08-17.csv`.
 
-La carpeta `data/history/` queda reservada para históricos consolidados.
+La carpeta `data/history/6month/` contiene los históricos consolidados de seis meses.
 
 ## Análisis de ETB
 
 `analyze_etb_history.py` elige la expansión más reciente que tenga al menos seis
 meses y un Elite Trainer Box, selecciona sus 7 cartas con mayor precio y
 descarga el histórico diario completo de Cardmarket y TCG Player. El resultado
-se guarda como `data/history/<expansion>-YYYY-MM-DD-YYYY-MM-DD.csv`.
+se guarda como `data/history/6month/<expansion>-YYYY-MM-DD-YYYY-MM-DD.csv`.
 
-Antes de descargar el histórico, consulta GitHub. Si `data/history/` ya contiene
+Antes de descargar el histórico, consulta GitHub. Si `data/history/6month/` ya contiene
 un CSV para la expansión elegida, termina sin hacer más peticiones a la API de
 precios.
 
