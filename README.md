@@ -4,13 +4,13 @@ Histórico público de precios en euros de las cartas de la expansión más reci
 
 ## Datos
 
-Las capturas actuales se guardan en `data/snapshot/` con este formato:
+Las capturas de la primera mensualidad se guardan en `data/1month/` con este formato:
 
 ```text
 <expansion>-YYYY-MM-DD.csv
 ```
 
-Ejemplo: `data/snapshot/pitch-black-2026-08-17.csv`.
+Ejemplo: `data/1month/pitch-black-2026-08-17.csv`.
 
 La carpeta `data/history/` queda reservada para históricos consolidados.
 
@@ -40,9 +40,11 @@ minuto. El script se autorregula para respetarlo; una ventana de seis meses para
 ## Automatización
 
 `fetch_latest_expansion.py` identifica la expansión del Elite Trainer Box más
-reciente. Solo descarga sus cartas si han pasado al menos 20 días desde su fecha
+reciente. Solo descarga sus cartas si han pasado al menos 28 días desde su fecha
 de lanzamiento oficial. Antes de pedir ese detalle, consulta GitHub: si ya hay
-un CSV de la expansión en `data/snapshot/`, termina sin hacer más peticiones a
-la API de precios.
+un CSV de la expansión en `data/1month/`, termina sin hacer más peticiones a la
+API de precios.
 
-Para configurar la clave localmente, copia `.env.example` a `.env` y rellena `RAPIDAPI_KEY`. La clave no se sube al repositorio. Cada CSV incluye el precio general `lowest_near_mint` y el de España `lowest_near_mint_ES`, ambos en EUR.
+Para configurar la clave localmente, copia `.env.example` a `.env` y rellena
+`RAPIDAPI_KEY`. La clave no se sube al repositorio. Cada CSV incluye el precio
+general `lowest_near_mint` y el de España `lowest_near_mint_ES`, ambos en EUR.

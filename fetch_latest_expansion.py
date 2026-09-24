@@ -2,8 +2,8 @@
 """Archive Cardmarket EUR prices for a mature newest Pokémon TCG ETB expansion.
 
 It stops unless the newest ETB expansion has been officially released for at
-least 20 days. It also stops before downloading cards when GitHub already has a
-snapshot for that expansion.
+least 28 days. It also stops before downloading cards when GitHub already has a
+one-month archive for that expansion.
 """
 
 from __future__ import annotations
@@ -23,12 +23,12 @@ from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 ROOT = Path(__file__).resolve().parent
-DATA_DIR = ROOT / "data" / "snapshot"
+DATA_DIR = ROOT / "data" / "1month"
 API_BASE = "https://pokemon-tcg-api.p.rapidapi.com"
 DEFAULT_REQUEST_TIMEOUT_SECONDS = 60
 DEFAULT_MAX_ATTEMPTS = 3
 RETRYABLE_HTTP_CODES = {408, 425, 429, 500, 502, 503, 504}
-MINIMUM_ETB_AGE_DAYS = 20
+MINIMUM_ETB_AGE_DAYS = 28
 GITHUB_REPOSITORY = "franlens/pokemon-tcg"
 
 
@@ -156,9 +156,9 @@ def safe_slug(value: str) -> str:
     return slug or "expansion"
 
 
-def github_snapshot_exists(expansion: dict) -> str | None:
-    """Return an existing GitHub snapshot for the expansion, if any."""
-    url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/contents/data/snapshot?ref=master"
+def github_archive_exists(expansion: dict) -> str | None:
+    """Return an existing GitHub one-month archive for the expansion, if any."""
+    url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/contents/data/1month?ref=master"
     request = Request(url, headers={"Accept": "application/vnd.github+json", "User-Agent": "pokemon-tcg-snapshot-job"})
     try:
         with urlopen(request, timeout=30) as response:
@@ -167,11 +167,11 @@ def github_snapshot_exists(expansion: dict) -> str | None:
         if exc.code == 404:
             return None
         detail = exc.read().decode("utf-8", errors="replace")
-        raise RuntimeError(f"Could not check GitHub snapshots (HTTP {exc.code}): {detail[:300]}") from exc
+        raise RuntimeError(f"Could not check GitHub one-month archives (HTTP {exc.code}): {detail[:300]}") from exc
     except (URLError, TimeoutError, socket.timeout, json.JSONDecodeError) as exc:
-        raise RuntimeError(f"Could not check GitHub snapshots: {exc}") from exc
+        raise RuntimeError(f"Could not check GitHub one-month archives: {exc}") from exc
     if not isinstance(entries, list):
-        raise RuntimeError("Unexpected GitHub snapshot directory response.")
+        raise RuntimeError("Unexpected GitHub one-month archive directory response.")
     prefix = f"{safe_slug(str(expansion.get('slug') or expansion['name']))}-"
     for entry in entries:
         name = str(entry.get("name", ""))
@@ -245,9 +245,9 @@ def main() -> int:
             f"Skipped: {expansion.get('name')} was released on {released_at} and is not eligible until {available_from}."
         )
         return 0
-    existing_snapshot = github_snapshot_exists(expansion)
-    if existing_snapshot:
-        print(f"Skipped: GitHub already contains data/snapshot/{existing_snapshot} for {expansion.get('name')}.")
+    existing_archive = github_archive_exists(expansion)
+    if existing_archive:
+        print(f"Skipped: GitHub already contains data/1month/{existing_archive} for {expansion.get('name')}.")
         return 0
     cards = expansion_cards(int(expansion["id"]))
     if not cards:
