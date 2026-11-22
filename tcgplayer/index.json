@@ -1,0 +1,181 @@
+{
+  "posts": {
+    "https://seller.tcgplayer.com/blog/scan-identify-updates-more-pricing-insights-easier-card-reviews-and-improved-live-scan": {
+      "url": "https://seller.tcgplayer.com/blog/scan-identify-updates-more-pricing-insights-easier-card-reviews-and-improved-live-scan",
+      "title": "Scan & Identify Updates: More Pricing Insights, Easier Card Reviews, and Improved Live Scan",
+      "published": "2026-11-09",
+      "checked_at": "2026-11-22T09:17:53+01:00",
+      "files": []
+    },
+    "https://seller.tcgplayer.com/blog/top-selling-sealed-products-october-2026": {
+      "url": "https://seller.tcgplayer.com/blog/top-selling-sealed-products-october-2026",
+      "title": "Top Selling Sealed Products: October 2026",
+      "published": "2026-11-10",
+      "checked_at": "2026-11-22T09:17:57+01:00",
+      "files": [
+        {
+          "path": "tcgplayer/top-selling/multi/2026-11-10-top-selling-sealed-product-report-gmv-october-2026.csv",
+          "source": "https://8946057.fs1.hubspotusercontent-na1.net/hubfs/8946057/Seller Marketing - CSVs/Seller Marketing - Top Selling CSVs/Top Selling Sealed Product Report (GMV) - October 2026.csv",
+          "link": "https://bit.ly/4zNy4nJ",
+          "category": "top-selling",
+          "game": "multi",
+          "rows": 100,
+          "columns": [
+            "Rank",
+            "Average Sale Price",
+            "Product Line",
+            "Set Name",
+            "Product Name"
+          ]
+        },
+        {
+          "path": "tcgplayer/top-selling/multi/2026-11-10-top-selling-sealed-product-report-qty-october-2026.csv",
+          "source": "https://8946057.fs1.hubspotusercontent-na1.net/hubfs/8946057/Seller Marketing - CSVs/Seller Marketing - Top Selling CSVs/Top Selling Sealed Product Report (QTY) - October 2026.csv",
+          "link": "https://bit.ly/3Uonq7F",
+          "category": "top-selling",
+          "game": "multi",
+          "rows": 100,
+          "columns": [
+            "Rank",
+            "Average Sale Price",
+            "Product Line",
+            "Set Name",
+            "Product Name"
+          ]
+        }
+      ]
+    },
+    "https://seller.tcgplayer.com/blog/a-dark-melody-has-taken-over-grand-archive-tcg": {
+      "url": "https://seller.tcgplayer.com/blog/a-dark-melody-has-taken-over-grand-archive-tcg",
+      "title": "A Dark Melody Has Taken Over Grand Archive TCG",
+      "published": "2026-11-11",
+      "checked_at": "2026-11-22T09:18:01+01:00",
+      "files": []
+    },
+    "https://seller.tcgplayer.com/blog/in-demand-understocked-cards-sealed-products-11-11-26": {
+      "url": "https://seller.tcgplayer.com/blog/in-demand-understocked-cards-sealed-products-11-11-26",
+      "title": "In Demand Understocked Cards & Sealed Products - 11/11/26",
+      "published": "2026-11-11",
+      "checked_at": "2026-11-22T09:18:00+01:00",
+      "files": []
+    },
+    "https://seller.tcgplayer.com/blog/price-trends-pokémon-cards-climbing-in-price-11-11-2026": {
+      "url": "https://seller.tcgplayer.com/blog/price-trends-pok%C3%A9mon-cards-climbing-in-price-11-11-2026",
+      "title": "Price Trends: Pokémon Cards Climbing in Price - 11/11/2026",
+      "published": "2026-11-11",
+      "checked_at": "2026-11-22T09:18:03+01:00",
+      "files": [
+        {
+          "path": "tcgplayer/price-trends/pokemon/2026-11-11-pokemon-price-trends-report-october-2026.csv",
+          "source": "https://8946057.fs1.hubspotusercontent-na1.net/hubfs/8946057/Seller Marketing - CSVs/Seller Marketing - Price Trends CSVs/Pok%C3%A9mon Price Trends Report - October 2026.csv",
+          "link": "https://bit.ly/4j5t7AJ",
+          "category": "price-trends",
+          "game": "pokemon",
+          "rows": 100,
+          "columns": [
+            "Product Condition ID",
+            "Product Line",
+            "Set Name",
+            "Product Name",
+            "Condition",
+            "Rarity",
+            "Initial Market Price",
+            "Final Market Price",
+            "Absolute Change ($)",
+            "Change (%)"
+          ]
+        }
+      ]
+    },
+    "https://seller.tcgplayer.com/blog/reach-more-buyers-with-international-package-forwarding": {
+      "url": "https://seller.tcgplayer.com/blog/reach-more-buyers-with-international-package-forwarding",
+      "title": "Reach More Buyers With International Package Forwarding",
+      "published": "2026-11-11",
+      "checked_at": "2026-11-22T09:17:58+01:00",
+      "files": []
+    },
+    "https://seller.tcgplayer.com/blog/introducing-ron-jaiven-tcgplayers-new-general-manager": {
+      "url": "https://seller.tcgplayer.com/blog/introducing-ron-jaiven-tcgplayers-new-general-manager",
+      "title": "Introducing Ron Jaiven, TCGplayer's New General Manager",
+      "published": "2026-11-17",
+      "checked_at": "2026-11-22T09:18:07+01:00",
+      "files": []
+    },
+    "https://seller.tcgplayer.com/blog/price-trends-yu-gi-oh-cards-climbing-in-price-11-17-2026": {
+      "url": "https://seller.tcgplayer.com/blog/price-trends-yu-gi-oh-cards-climbing-in-price-11-17-2026",
+      "title": "Price Trends: Yu-Gi-Oh! Cards Climbing in Price - 11/17/2026",
+      "published": "2026-11-17",
+      "checked_at": "2026-11-22T09:18:06+01:00",
+      "files": [
+        {
+          "path": "tcgplayer/price-trends/yugioh/2026-11-17-yu-gi-oh-price-trends-report-october-2026.csv",
+          "source": "https://8946057.fs1.hubspotusercontent-na1.net/hubfs/8946057/Seller Marketing - CSVs/Seller Marketing - Price Trends CSVs/Yu-Gi-Oh! Price Trends Report - October 2026.csv",
+          "link": "https://bit.ly/4zKXFNv",
+          "category": "price-trends",
+          "game": "yugioh",
+          "rows": 100,
+          "columns": [
+            "Product Condition ID",
+            "Product Line",
+            "Set Name",
+            "Product Name",
+            "Condition",
+            "Rarity",
+            "Initial Market Price",
+            "Final Market Price",
+            "Absolute Change ($)",
+            "Change (%)"
+          ]
+        }
+      ]
+    },
+    "https://seller.tcgplayer.com/blog/the-100-most-expensive-bulk-magic-the-gathering-cards-right-now-november-2026": {
+      "url": "https://seller.tcgplayer.com/blog/the-100-most-expensive-bulk-magic-the-gathering-cards-right-now-november-2026",
+      "title": "The 100 Most Expensive \"Bulk\" Magic: The Gathering Cards Right Now - November 2026",
+      "published": "2026-11-18",
+      "checked_at": "2026-11-22T09:18:12+01:00",
+      "files": [
+        {
+          "path": "tcgplayer/price-trends/magic/2026-11-18-100-most-expensive-bulk-magic-cards-november-2026.csv",
+          "source": "https://8946057.fs1.hubspotusercontent-na1.net/hubfs/8946057/Seller Marketing - CSVs/Seller Marketing - Price Trends CSVs/100 Most Expensive Bulk Magic Cards - November 2026.csv",
+          "link": "https://bit.ly/4tfptYE",
+          "category": "price-trends",
+          "game": "magic",
+          "rows": 100,
+          "columns": [
+            "Product Condition ID",
+            "Product Line",
+            "Set Name",
+            "Product Name",
+            "Condition",
+            "Rarity",
+            "Market Price"
+          ]
+        }
+      ]
+    },
+    "https://seller.tcgplayer.com/blog/the-best-selling-cards-from-magic-the-gatherings-star-trek": {
+      "url": "https://seller.tcgplayer.com/blog/the-best-selling-cards-from-magic-the-gatherings-star-trek",
+      "title": "The Best-Selling Cards from Magic: The Gathering's Star Trek",
+      "published": "2026-11-18",
+      "checked_at": "2026-11-22T09:18:09+01:00",
+      "files": [
+        {
+          "path": "tcgplayer/top-selling/magic/2026-11-18-mtg-star-trek-top-50-best-sellers.csv",
+          "source": "https://8946057.fs1.hubspotusercontent-na1.net/hubfs/8946057/Seller Marketing - CSVs/Seller Marketing - Top Selling CSVs/MTG Star Trek - Top 50 Best-Sellers.csv",
+          "link": "https://bit.ly/48mSM1N",
+          "category": "top-selling",
+          "game": "magic",
+          "rows": 50,
+          "columns": [
+            "PRODUCT_NAME",
+            "PRODUCT_LINE",
+            "SET_NAME",
+            "RARITY",
+            "MARKET_PRICE"
+          ]
+        }
+      ]
+    }
+  }
+}
