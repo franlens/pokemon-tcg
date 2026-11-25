@@ -176,6 +176,27 @@
           ]
         }
       ]
+    },
+    "https://seller.tcgplayer.com/blog/top-selling-pokémon-sets-right-now-11-24-2026": {
+      "url": "https://seller.tcgplayer.com/blog/top-selling-pok%C3%A9mon-sets-right-now-11-24-2026",
+      "title": "Top Selling Pokémon Sets Right Now – 11/24/2026",
+      "published": "2026-11-24",
+      "checked_at": "2026-11-25T05:00:07+01:00",
+      "files": [
+        {
+          "path": "tcgplayer/top-selling/pokemon/2026-11-24-top-selling-pokemon-sets-november-2026.csv",
+          "source": "https://8946057.fs1.hubspotusercontent-na1.net/hubfs/8946057/Seller Marketing - CSVs/Seller Marketing - Top Selling CSVs/Top Selling Pok%C3%A9mon Sets - November 2026.csv",
+          "link": "https://bit.ly/4j9RjAD",
+          "category": "top-selling",
+          "game": "pokemon",
+          "rows": 100,
+          "columns": [
+            "Rank",
+            "Set",
+            "Release Date"
+          ]
+        }
+      ]
     }
   }
 }
